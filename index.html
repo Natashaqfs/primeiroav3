@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CRUD de Produtos</title>
+</head>
+<body>
+  <h1>CRUD de Produtos</h1>
+
+  <script src="https://cdn.jsdelivr.net/npm/cors/dist/umd.js"></script> <!-- Incluir o script do CORS -->
+
+  <h2>Listar Produtos</h2>
+  <button onclick="listarProdutos()">Listar</button>
+  <div id="produtos-list"></div>
+
+  <h2>Localizar Produto por ID</h2>
+  <input type="text" id="produto-id" placeholder="ID do Produto">
+  <button onclick="localizarProduto()">Localizar</button>
+  <div id="produto-info"></div>
+
+  <h2>Inserir Produto</h2>
+  <input type="text" id="produto-nome" placeholder="Nome do Produto">
+  <input type="number" id="produto-preco" placeholder="Preço do Produto">
+  <button onclick="inserirProduto()">Inserir</button>
+
+  <h2>Editar Produto</h2>
+  <input type="text" id="produto-id-edit" placeholder="ID do Produto">
+  <input type="text" id="produto-nome-edit" placeholder="Novo Nome do Produto">
+  <input type="number" id="produto-preco-edit" placeholder="Novo Preço do Produto">
+  <button onclick="editarProduto()">Editar</button>
+
+  <h2>Deletar Produto</h2>
+  <input type="text" id="produto-id-delete" placeholder="ID do Produto">
+  <button onclick="deletarProduto()">Deletar</button>
+
+  <script>
+    const cors = new CORS(); // Inicializar a biblioteca CORS
+    cors.init();
+
+    // Restante do código do frontend...
+
+    // Função para enviar requisição GET para listar produtos
+    function listarProdutos() {
+      fetch('http://localhost:3000/produtos')
+        .then(response => response.json())
+        .then(data => {
+          const produtosList = document.getElementById('produtos-list');
+          produtosList.innerHTML = '';
+
+          data.forEach(produto => {
+            const item = document.createElement('div');
+            item.textContent = `ID: ${produto.id}, Nome: ${produto.nome}, Preço: ${produto.preco}`;
+            produtosList.appendChild(item);
+          });
+        })
+        .catch(error => {
+          console.error(error);
+          alert('Erro ao listar produtos');
+        });
+    }
+
+    // Função para enviar requisição GET para localizar produto por ID
+    function localizarProduto() {
+      const produtoId = document.getElementById('produto-id').value;
+
+      fetch(`http://localhost:3000/produtos/${produtoId}`)
+        .then(response => response.json())
+        .then(data => {
+          const produtoInfo = document.getElementById('produto-info');
+          produtoInfo.innerHTML = `ID: ${data.id}, Nome: ${data.nome}, Preço: ${data.preco}`;
+        })
+        .catch(error => {
+          console.error(error);
+          alert('Erro ao localizar produto');
+        });
+    }
+
+    // Função para enviar requisição POST para inserir produto
+    function inserirProduto() {
+      const produtoNome = document.getElementById('produto-nome').value;
+      const produtoPreco = parseFloat(document.getElementById('produto-preco').value);
+
+      const body = {
+        nome: produtoNome,
+        preco: produtoPreco
+      };
+
+      fetch('http://localhost:3000/produtos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+        .then(response => response.json())
+        .then(data => {
+          alert('Produto inserido com sucesso!');
+        })
+        .catch(error => {
+          console.error(error);
+          alert('Erro ao inserir produto');
+        });
+    }
+
+    // Função para enviar requisição PUT para editar produto
+    function editarProduto() {
+      const produtoId = document.getElementById('produto-id-edit').value;
+      const produtoNome = document.getElementById('produto-nome-edit').value;
+      const produtoPreco = parseFloat(document.getElementById('produto-preco-edit').value);
+
+      const body = {
+        nome: produtoNome,
+        preco: produtoPreco
+      };
+
+      fetch(`http://localhost:3000/produtos/${produtoId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+        .then(response => response.json())
+        .then(data => {
+          alert('Produto editado com sucesso!');
+        })
+        .catch(error => {
+          console.error(error);
+          alert('Erro ao editar produto');
+        });
+    }
+
+    // Função para enviar requisição DELETE para deletar produto
+    function deletarProduto() {
+      const produtoId = document.getElementById('produto-id-delete').value;
+
+      fetch(`http://localhost:3000/produtos/${produtoId}`, {
+        method: 'DELETE'
+      })
+        .then(response => response.json())
+        .then(data => {
+          alert('Produto deletado com sucesso!');
+        })
+        .catch(error => {
+          console.error(error);
+          alert('Erro ao deletar produto');
+        });
+    }
+  </script>
+</body>
+</html>
